@@ -23,6 +23,8 @@ if __name__ == "__main__":
     weather = get_high_low()
     print(weather)
     print(colors[weather[0]].get_hex()[1:])
+    color_code = int(colors[weather[0]].get_hex()[1:],16)
+    print(color_code)
     print(type(colors[weather[0]].get_hex()))
 
     pass
