@@ -1,6 +1,6 @@
 """The module contains templates for colour cycles"""
 import time
-import apa102
+import support.apa102
 
 class ColorCycleTemplate:
     """This class is the basis of all color cycles.
