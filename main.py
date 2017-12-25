@@ -17,10 +17,10 @@ def get_high_low():
     weather = Weather()
     lookup = weather.lookup(woeid)
     forcast = lookup.forecast()
-    return (forcast[0].high(), forcast[0].low())
+    return (int(forcast[0].high()), int(forcast[0].low()))
 
 if __name__ == "__main__":
     weather = get_high_low()
     print(weather)
-    print(int(colors[weather[0]]))
+    print(colors[weather[0]])
     pass
