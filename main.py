@@ -22,5 +22,5 @@ def get_high_low():
 if __name__ == "__main__":
     weather = get_high_low()
     print(weather)
-    print(colors[weather[0]])
+    print(hex(colors[weather[0]]))
     pass
