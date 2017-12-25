@@ -24,7 +24,11 @@ if __name__ == "__main__":
     print(weather)
     print(colors[weather[0]].get_hex()[1:])
     color_code = int(colors[weather[0]].get_hex()[1:],16)
-    print(color_code)
-    print(type(colors[weather[0]].get_hex()))
+    color_code_low = int(colors[weather[1]].get_hex()[1:],16)
+    high_cycle = colorschemes.Solid(num_led=num_led, pause_value=3,num_steps_per_cycle=num_led,num_cycles=3,color=color_code)
+    low_cycle = colorschemes.Solid(num_led=num_led, pause_value=3,num_steps_per_cycle=num_led,num_cycles=3,color=color_code_low)
+    while True:
+        high_cycle.start()
+        low_cycle.start()
 
     pass
