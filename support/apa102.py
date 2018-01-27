@@ -1,12 +1,11 @@
 """This is the main driver module for APA102 LEDs"""
-import Adafruit_GPIO as GPIO
-import Adafruit_GPIO.SPI as SPI
+
 from math import ceil
 
 RGB_MAP = { 'rgb': [3, 2, 1], 'rbg': [3, 1, 2], 'grb': [2, 3, 1],
             'gbr': [2, 1, 3], 'brg': [1, 3, 2], 'bgr': [1, 2, 3] }
 
-class APA102:
+class APA102():
     """
     Driver for APA102 LEDS (aka "DotStar").
 
@@ -71,10 +70,12 @@ class APA102:
     LED_START = 0b11100000 # Three "1" bits, followed by 5 brightness bits
 
     def __init__(self, num_led, global_brightness=MAX_BRIGHTNESS,
-                 order='rgb', mosi=10, sclk=11, max_speed_hz=8000000):
+                 order='rgb', mosi=10, sclk=11, max_speed_hz=8000000, test=False, test_interface=None):
         """Initializes the library.
         
         """
+        self.test = test
+        self.test_interface = test_interface
         self.num_led = num_led  # The number of LEDs in the Strip
         order = order.lower()
         self.rgb = RGB_MAP.get(order, RGB_MAP['rgb'])
@@ -87,10 +88,13 @@ class APA102:
         self.leds = [self.LED_START,0,0,0] * self.num_led # Pixel buffer
         
         # MOSI 10 and SCLK 11 is hardware SPI, which needs to be set-up differently
-        if mosi == 10 and sclk == 11:
-        	self.spi = SPI.SpiDev(0, 0, max_speed_hz) # Bus 0, chip select 0
-        else:
-        	self.spi = SPI.BitBang(GPIO.get_platform_gpio(), sclk, mosi)
+        if not test:
+            import Adafruit_GPIO as GPIO
+            import Adafruit_GPIO.SPI as SPI
+            if mosi == 10 and sclk == 11:
+                self.spi = SPI.SpiDev(0, 0, max_speed_hz) # Bus 0, chip select 0
+            else:
+                self.spi = SPI.BitBang(GPIO.get_platform_gpio(), sclk, mosi)
 
     def clock_start_frame(self):
         """Sends a start frame to the LED strip.
@@ -98,7 +102,8 @@ class APA102:
         This method clocks out a start frame, telling the receiving LED
         that it must update its own color now.
         """
-        self.spi.write([0] * 4)  # Start frame, 32 zero bits
+        if not self.test:
+            self.spi.write([0] * 4)  # Start frame, 32 zero bits
 
 
     def clock_end_frame(self):
@@ -129,8 +134,9 @@ class APA102:
         been sent as part of "clockEndFrame".
         """
         # Round up num_led/2 bits (or num_led/16 bytes)
-        for _ in range((self.num_led + 15) // 16):
-            self.spi.write([0x00])
+        if not self.test:
+            for _ in range((self.num_led + 15) // 16):
+                self.spi.write([0x00])
 
 
     def clear_strip(self):
@@ -198,17 +204,20 @@ class APA102:
 
         Todo: More than 1024 LEDs requires more than one xfer operation.
         """
-        self.clock_start_frame()
-        # xfer2 kills the list, unfortunately. So it must be copied first
-        # SPI takes up to 4096 Integers. So we are fine for up to 1024 LEDs.
-        self.spi.write(list(self.leds))
-        self.clock_end_frame()
+        if not self.test:
+            self.clock_start_frame()
+            # xfer2 kills the list, unfortunately. So it must be copied first
+            # SPI takes up to 4096 Integers. So we are fine for up to 1024 LEDs.
+            self.spi.write(list(self.leds))
+            self.clock_end_frame()
+        else:
+            self.test_interface.write(list(self.leds))
 
 
     def cleanup(self):
         """Release the SPI device; Call this method at the end"""
-
-        self.spi.close()  # Close SPI port
+        if not self.test:
+            self.spi.close()  # Close SPI port
 
     @staticmethod
     def combine_color(red, green, blue):
