@@ -38,7 +38,6 @@ class LedPanel(Tk):
         btn = Button(self, text="Exit", command=self.terminate)
         btn.pack()
     def write(self, led_data):
-        print(led_data)
         for led in range(self._leds_num):
             start_index = 4 * led
             data = led_data[start_index:start_index+4]
