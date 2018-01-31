@@ -78,6 +78,7 @@ class APA102():
         self.test_interface = test_interface
         self.num_led = num_led  # The number of LEDs in the Strip
         order = order.lower()
+        print(order)
         self.rgb = RGB_MAP.get(order, RGB_MAP['rgb'])
         # Limit the brightness to the maximum if it's set higher
         if global_brightness > self.MAX_BRIGHTNESS:

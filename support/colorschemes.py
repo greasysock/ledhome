@@ -68,21 +68,22 @@ class Solid(ColorCycleTemplate):
     """Paints the strip with one colour."""
     color = None
     brightness = 5
-    def __init__(self, num_led, pause_value, num_steps_per_cycle,num_cycles, color = 0xFFFFFF, brightness = 5, test=False, test_interface=None):
-        self.color = color
-        ColorCycleTemplate.__init__(self, num_led, pause_value, num_steps_per_cycle,num_cycles,test=test, test_interface=test_interface)
+    def __init__(self, num_led, pause_value, num_steps_per_cycle,num_cycles, color_tuple = (255, 255, 255), brightness = 5, test=False, test_interface=None, order="rbg"):
+        self.color = color_tuple
+        ColorCycleTemplate.__init__(self, num_led, pause_value, num_steps_per_cycle,num_cycles,test=test, test_interface=test_interface, order=order)
         self.num_led = num_led
     def _animation_weight(self, x_time):
         return ( x_time**2) / (self.num_steps_per_cycle * 100)
     def init(self, strip, num_led):
         for led in range(0, num_led):
-            strip.set_pixel_rgb(led,self.color,self.brightness) # Paint 5% white
-    def update_color(self, color):
+            strip.set_pixel(led,self.color[0], self.color[1], self.color[2],self.brightness) # Paint 5% white
+    def update_color(self, color_tuple):
         frame_time = float(1) / float(self.num_steps_per_cycle)
 
-        Blue = self.color & 255
-        Green = (self.color >> 8) & 255
-        Red = (self.color >> 16) & 255
+        Blue = self.color[2]
+        Green = self.color[1]
+        Red = self.color[0]
+
         frame = 1
         while frame <= self.num_steps_per_cycle:
             heavy = self._animation_weight(frame)
@@ -96,10 +97,11 @@ class Solid(ColorCycleTemplate):
             self.strip.show()
             time.sleep(frame_time)
         time.sleep(.2)
-        Blue = color & 255
-        Green = (color >> 8) & 255
-        Red = (color >> 16) & 255
+        Blue = color_tuple[2]
+        Green = color_tuple[1]
+        Red = color_tuple[0]
         frame = 1
+
         while frame <= self.num_steps_per_cycle:
             heavy = self._animation_weight(frame)
             BlueTemp = int(float(Blue * heavy))
@@ -113,10 +115,10 @@ class Solid(ColorCycleTemplate):
             time.sleep(frame_time)
 
         for led in range(0, self.num_led):
-            self.strip.set_pixel_rgb(led,color,self.brightness)
+            self.strip.set_pixel(led, Red, Green, Blue,self.brightness)
         self.strip.show()
 
-        self.color = color
+        self.color = color_tuple
     def update(self, strip, num_led, num_steps_per_cycle, current_step,
                current_cycle):
         # Do nothing: Init lit the strip, and update just keeps it this way
