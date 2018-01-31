@@ -41,7 +41,7 @@ class LedPanel(Tk):
         for led in range(self._leds_num):
             start_index = 4 * led
             data = led_data[start_index:start_index+4]
-            color_code = '#%02x%02x%02x' % (data[3], data[1], data[2])
+            color_code = '#%02x%02x%02x' % (data[3], data[2], data[1])
             l = led + 1
             self._canvas.itemconfig(l, fill=color_code)
     def start(self):

@@ -124,3 +124,11 @@ class weather():
     @property
     def forecasts(self):
         return self._forecast
+
+    @property
+    def city_name(self):
+        return self._city_name
+
+    @property
+    def state(self):
+        return self._state_code

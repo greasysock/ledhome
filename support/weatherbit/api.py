@@ -33,7 +33,6 @@ class connection():
 
         for key in kwargs.keys():
             try:
-                print(key)
                 if location_method[key] == last_type or last_type == -1:
                     last_type = location_method[key]
                 else:
