@@ -67,7 +67,7 @@ class RoundAndRound(ColorCycleTemplate):
 class Solid(ColorCycleTemplate):
     """Paints the strip with one colour."""
     color = None
-    brightness = 5
+    brightness = 100
     def __init__(self, num_led, pause_value, num_steps_per_cycle,num_cycles, color_tuple = (255, 255, 255), brightness = 5, test=False, test_interface=None, order="rbg"):
         self.color = color_tuple
         ColorCycleTemplate.__init__(self, num_led, pause_value, num_steps_per_cycle,num_cycles,test=test, test_interface=test_interface, order=order)

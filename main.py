@@ -5,7 +5,7 @@ import time, threading
 import queue, os, sys
 
 num_led = 10
-test=True
+test=False
 
 q = queue.Queue()
 white = Color("white")
