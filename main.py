@@ -90,8 +90,7 @@ class MainLoop(threading.Thread):
 
             brightness = self._get_brightness()
             cycle.set_brightness(brightness)
-            print(brightness)
-            print("High: {}, Low: {}".format(weather[0], weather[1]))
+            print("High: {}, Low: {}, Brightness: {}".format(weather[0], weather[1], brightness))
             color_code = self._tempscheme.get(weather[0])
             color_code_low = self._tempscheme.get(weather[1])
             cycle.update_color(color_code_low)
