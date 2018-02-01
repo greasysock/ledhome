@@ -46,7 +46,7 @@ class MainLoop(threading.Thread):
         threading.Thread.__init__(self, target=worker)
         self._test_interface = test_interface
         self._weatherbit = api.connection(weatherbit_api)
-        self._lookup_timeout = 60*10
+        self._lookup_timeout = 60*20
         self._last_lookup = 0
         self._forecast = -1
         self._tempscheme = colorgenerator.TemperatureScheme()
