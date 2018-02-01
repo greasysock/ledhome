@@ -5,7 +5,7 @@ An led driver script that changes the color temperature based on the weather. Cu
 
 * A Raspberry Pi or a development board with GPIO libraries.
 * An APA102 Led Strip. Although support for other strips can easily be added.
-* A free account on `weatherbit.io`
+* A free account on weatherbit.io
 
 ### Prerequisites:
 
