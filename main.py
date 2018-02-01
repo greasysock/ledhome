@@ -75,22 +75,17 @@ class MainLoop(threading.Thread):
         cycle = colorschemes.Solid(num_led=num_led, pause_value=3, num_steps_per_cycle=100, num_cycles=0,
                                         brightness=100, test=test, test_interface=self._test_interface, order="rgb")
         cycle.start()
-        i = 0
-        j = 110
         while True:
-            weather = (i, j)
 
-            i += 1
-            j -= 1
-            #weather = self._get_high_low()
+            weather = self._get_high_low()
 
             print("High: {}, Low: {}".format(weather[0], weather[1]))
             color_code = self._tempscheme.get(weather[0])
             color_code_low = self._tempscheme.get(weather[1])
             cycle.update_color(color_code_low)
-            time.sleep(2)
+            time.sleep(30)
             cycle.update_color(color_code)
-            time.sleep(2)
+            time.sleep(30)
 
 if __name__ == "__main__":
     test_interface = None
