@@ -66,10 +66,10 @@ class APA102():
     down the line to the last LED.
     """
     # Constants
-    MAX_BRIGHTNESS = 31 # Safeguard: Max. brightness that can be selected. 
+    _MAX_BRIGHTNESS = 31 # Safeguard: Max. brightness that can be selected.
     LED_START = 0b11100000 # Three "1" bits, followed by 5 brightness bits
 
-    def __init__(self, num_led, global_brightness=MAX_BRIGHTNESS,
+    def __init__(self, num_led, global_brightness=_MAX_BRIGHTNESS,
                  order='rgb', mosi=10, sclk=11, max_speed_hz=8000000, test=False, test_interface=None):
         """Initializes the library.
         
@@ -81,10 +81,10 @@ class APA102():
         print(order)
         self.rgb = RGB_MAP.get(order, RGB_MAP['rgb'])
         # Limit the brightness to the maximum if it's set higher
-        if global_brightness > self.MAX_BRIGHTNESS:
-            self.global_brightness = self.MAX_BRIGHTNESS
+        if global_brightness > self._MAX_BRIGHTNESS:
+            self._global_brightness = self._MAX_BRIGHTNESS
         else:
-            self.global_brightness = global_brightness
+            self._global_brightness = global_brightness
 
         self.leds = [self.LED_START,0,0,0] * self.num_led # Pixel buffer
         
@@ -97,6 +97,9 @@ class APA102():
             else:
                 self.spi = SPI.BitBang(GPIO.get_platform_gpio(), sclk, mosi)
 
+    def set_brightness(self, brightness):
+        if brightness < self._MAX_BRIGHTNESS:
+            self._global_brightness = brightness
     def clock_start_frame(self):
         """Sends a start frame to the LED strip.
 
@@ -163,7 +166,7 @@ class APA102():
         # Calculate pixel brightness as a percentage of the
         # defined global_brightness. Round up to nearest integer
         # as we expect some brightness unless set to 0
-        brightness = ceil(bright_percent*self.global_brightness/100.0)
+        brightness = ceil(bright_percent*self._global_brightness/100.0)
         brightness = int(brightness)
 
         # LED startframe is three "1" bits, followed by 5 brightness bits

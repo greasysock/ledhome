@@ -132,3 +132,11 @@ class weather():
     @property
     def state(self):
         return self._state_code
+
+    @property
+    def lat(self):
+        return self._lat
+
+    @property
+    def lon(self):
+        return self._lon
