@@ -1,11 +1,11 @@
-from support import colorschemes, interface, colorgenerator
+from support import colorschemes, colorgenerator, __title__, __author__, __version__
 from support.weatherbit import api
 from colour import Color
 import time, threading, datetime
-import queue, os, sys
+import queue, os, sys, argparse
 
-num_led = 10
-test = False
+DEFAULT_LED = 10
+DEFAULT_TEST = False
 
 q = queue.Queue()
 white = Color("white")
@@ -76,7 +76,6 @@ class MainLoop(threading.Thread):
 
         return self._forecast
     def _get_brightness(self):
-        hour = datetime.datetime.now().hour
         if datetime.datetime.now().hour >= self._DIM_TIME or datetime.datetime.now().hour <= self._BRIGHT_TIME:
             return self._DIM_BRIGHT
         return self._MAX_BRIGHT
@@ -97,9 +96,35 @@ class MainLoop(threading.Thread):
             cycle.update_color(color_code)
             time.sleep(30)
 
+def main():
+    parser = argparse.ArgumentParser(prog=__title__)
+    parser.add_argument('-v', '--version', action='version', version='%(prog)s {}'.format(__version__))
+    parser.add_argument('-t', '--test', help='Simulates led animations in a tkinter window.', action='store_true', required=False)
+    parser.add_argument('-l', '--leds', help='Number of LEDs to power. Default is 10.', metavar='\'(int)\'', required=False)
+
+    args = parser.parse_args()
+
+    test = DEFAULT_TEST
+    leds = DEFAULT_LED
+    if args.test:
+        test = True
+    if args.leds:
+        try:
+            value = int(args.leds)
+            if value < 1:
+                raise(ValueError)
+            else:
+                leds = value
+        except ValueError:
+            print("Must enter valid number of LEDs")
+            sys.exit(2)
+    return test, leds
+
 if __name__ == "__main__":
     test_interface = None
+    test, num_led = main()
     if test:
+        from support import interface
         test_interface = interface.LedPanel(num_led)
     main = MainLoop(test_interface=test_interface)
     main.start()

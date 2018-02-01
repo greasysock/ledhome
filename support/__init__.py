@@ -7,4 +7,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 __author__ = "greasysock@github.com"
 __version__ = "alpha-0.0.1"
-__title__ = "TeaLight"
+__title__ = "tealight"
