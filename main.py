@@ -77,7 +77,6 @@ class MainLoop(threading.Thread):
         return self._forecast
     def _get_brightness(self):
         hour = datetime.datetime.now().hour
-        print(hour)
         if datetime.datetime.now().hour >= self._DIM_TIME or datetime.datetime.now().hour <= self._BRIGHT_TIME:
             return self._DIM_BRIGHT
         return self._MAX_BRIGHT
