@@ -41,7 +41,7 @@ class MainLoop(threading.Thread):
     _DIM_TIME = 23
     _BRIGHT_TIME = 7
     _MAX_BRIGHT = 31
-    _DIM_BRIGHT = 3
+    _DIM_BRIGHT = 1
     def __init__(self, test_interface=None):
         threading.Thread.__init__(self, target=worker)
         self._test_interface = test_interface
