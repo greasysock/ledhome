@@ -54,19 +54,10 @@ class MainLoop(threading.Thread):
         if time.time() - self._last_lookup > self._lookup_timeout:
             weather = self._weatherbit.get_forecast_hourly(city=weatherbit_city, state=weatherbit_state)
             self._last_weather = weather
-            highest = None
-            lowest = None
-            for forecast in weather.forecasts:
-                try:
-                    if forecast.temperature.actual > highest:
-                        highest = forecast.temperature.actual
-                except TypeError:
-                    highest = forecast.temperature.actual
-                try:
-                    if forecast.temperature.actual < lowest:
-                        lowest = forecast.temperature.actual
-                except TypeError:
-                    lowest = forecast.temperature.actual
+
+            highest = max(forecast.temperature.actual for forecast in weather.forecasts)
+            lowest = min(forecast.temperature.actual for forecast in weather.forecasts)
+
             print("{}, {}".format(weather.city_name, weather.state))
             print("Hi: {}, Lo: {}".format(highest, lowest))
             self._forecast = ( round(highest), round(lowest) )
