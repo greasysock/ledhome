@@ -74,8 +74,6 @@ class MainLoop(threading.Thread):
             print("Hi: {}, Lo: {}".format(highest, lowest))
             self._forecast = ( round(highest), round(lowest) )
             self._last_lookup = time.time()
-        else:
-            print("Using weather cache.")
 
         return self._forecast
     def _get_np_high_low(self, weather):
@@ -108,8 +106,8 @@ class MainLoop(threading.Thread):
             weather = self._get_high_low()
             brightness = self._get_brightness()
             cycle.set_brightness(brightness)
-            print("High: {}, Low: {}, Brightness: {}".format(weather[0], weather[1], brightness))
             if self._cycle == 0:
+                print("High: {}, Low: {}, Brightness: {}".format(weather[0], weather[1], brightness))
                 color_code = self._tempscheme.get(weather[0])
                 color_code_low = self._tempscheme.get(weather[1])
                 cycle.update_color(color_code_low)

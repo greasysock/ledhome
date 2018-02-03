@@ -119,7 +119,6 @@ class NpFunction(ColorCycleTemplate):
             time.sleep(frame_time)
         self._last_color = (r, g, b)
         frame = 1
-        print(self._last_color)
         while frame <= self.num_steps_per_cycle:
             heavy = self._animation_weight(frame)
             BlueTemp = int(float(self._last_color[2] * heavy))
