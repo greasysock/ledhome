@@ -37,7 +37,8 @@ class ColorCycleTemplate():
         The default does nothing
         """
         pass
-
+    def set_brightness(self, brightness):
+        self.strip.set_brightness(brightness)
     def update(self, strip, num_led, num_steps_per_cycle, current_step,
                current_cycle):
         """This method paints one subcycle. It must be implemented.

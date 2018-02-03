@@ -121,6 +121,10 @@ class weather():
 
         for x_forecast in data:
             self._forecast.append(forecast(x_forecast))
+
+    def __len__(self):
+        return self._forecast.__len__()
+
     @property
     def forecasts(self):
         return self._forecast

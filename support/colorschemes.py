@@ -63,7 +63,75 @@ class RoundAndRound(ColorCycleTemplate):
         strip.rotate()
         return 1
 
+class NpFunction(ColorCycleTemplate):
+    color = None
+    brightness = 100
+    def __init__(self, num_led, pause_value, num_steps_per_cycle,num_cycles, color_tuple = (0, 0, 0), brightness = 5, test=False, test_interface=None, order="rbg", x_val = None):
+        self.color = color_tuple
+        ColorCycleTemplate.__init__(self, num_led, pause_value, num_steps_per_cycle,num_cycles,test=test, test_interface=test_interface, order=order)
+        self.num_led = num_led
+        self._x_val = x_val
+    def init(self, strip, num_led):
+        time.sleep(1)
+        for led in range(0, num_led):
+            strip.set_pixel(led,self.color[0], self.color[1], self.color[2],self.brightness)
+    def update_function(self, np_function, x_val):
+        self._x_val = x_val
+        self._np = np_function
 
+    def _animation_weight(self, x_time):
+        return ( x_time**2) / (self.num_steps_per_cycle * 100)
+    def set_color_generator(self, generator):
+        self._generator = generator
+    def run(self, t=20):
+        frame_time = float(1) / float(self.num_steps_per_cycle)
+        frame = 0
+        m_x = max(self._x_val)
+        mi_x = min(self._x_val)
+        domain = m_x - mi_x
+        step_frame = float(domain) / float(self.num_steps_per_cycle * t)
+        r = 0
+        g = 0
+        b = 0
+        first_col = self._generator.get_high(float(self._np((step_frame * frame) + mi_x)))
+        while frame <= self.num_steps_per_cycle:
+            heavy = self._animation_weight(frame)
+            BlueTemp = int(float(first_col[2] * heavy))
+            GreenTemp = int(float(first_col[1] * heavy))
+            RedTemp = int(float(first_col[0] * heavy))
+            frame += 1
+            for led in range(0, self.num_led):
+                self.strip.set_pixel(led, RedTemp, GreenTemp, BlueTemp, self.brightness)
+            self.strip.show()
+            time.sleep(frame_time)
+
+        frame = 0
+        while frame < self.num_steps_per_cycle * t:
+            x_frame = (step_frame * frame) + mi_x
+            temp = self._np(x_frame)
+            frame += 1
+            r,g,b = self._generator.get_high(float(temp))
+#            print("({} {} {}) {}F".format(r, g, b, round(float(temp))))
+            for led in range(0, self.num_led):
+                self.strip.set_pixel(led, r, g, b, self.brightness)
+            self.strip.show()
+
+            time.sleep(frame_time)
+        self._last_color = (r, g, b)
+        frame = 1
+        print(self._last_color)
+        while frame <= self.num_steps_per_cycle:
+            heavy = self._animation_weight(frame)
+            BlueTemp = int(float(self._last_color[2] * heavy))
+            GreenTemp = int(float(self._last_color[1] * heavy))
+            RedTemp = int(float(self._last_color[0] * heavy))
+            frame += 1
+            for led in range(0, self.num_led):
+                self.strip.set_pixel(led, self._last_color[0] - RedTemp, self._last_color[1] - GreenTemp,
+                                     self._last_color[2] - BlueTemp, self.brightness)
+            self.strip.show()
+            time.sleep(frame_time)
+        time.sleep(1)
 class Solid(ColorCycleTemplate):
     """Paints the strip with one colour."""
     color = None

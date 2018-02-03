@@ -13,21 +13,38 @@ dark_orange = Color("#FF8C00")
 
 class TemperatureScheme:
     _low_min = 5
+    _low_min_high = _low_min * 1000
     _high_min = 105
+    _high_min_high = _high_min * 1000
     def __init__(self, midpoint=65, min=35, max=95):
         self._midpoint = midpoint
+        self._midpoint_high = midpoint * 1000
         self._min = min
+        self._min_high = self._min * 1000
         self._max = max
+        self._max_high = self._max * 1000
 
         self._min_range = midpoint - min + 1
+        self._min_range_high = self._min_range * 1000
         self._max_range = max - midpoint + 1
+        self._max_range_high = self._max_range * 1000
+
 
         colors_low = self._range_to(blue, white, self._min_range)
+        colors_low_high = self._range_to(blue, white, self._min_range_high)
+
         colors_high = list(white.range_to(red, self._max_range))
+        colors_high_high = list(white.range_to(red, self._max_range_high))
+
         self._colors = colors_low + colors_high
+        self._colors_high = colors_low_high + colors_high_high
 
         self._colors_low_low = list(cyan.range_to(blue, self._min - self._low_min))
+        self._colors_low_low_high = list(cyan.range_to(blue, self._min_high - self._low_min_high))
+
         self._colors_high_high = list(red.range_to(dark_orange, self._high_min - self._max))
+        self._colors_high_high_high = list(red.range_to(dark_orange, self._high_min_high - self._max_high))
+
 
     # Source Author: https://stackoverflow.com/questions/20792445/calculate-rgb-value-for-a-range-of-values-to-create-heat-map martineau
     def _convert_to_rgb(self, minval, maxval, val, colors):
@@ -62,6 +79,36 @@ class TemperatureScheme:
         if out_value > 0:
             return out_value - 1
         return out_value
+    def get_high(self, temp):
+        temp = round(temp * 1000)
+
+        #Do normal method
+        if temp >= self._min_high and temp <= self._max_high:
+            color_temp = temp - self._min_high
+            out_color = self._colors_high[color_temp]
+        #Do less than normal temp
+        elif temp < self._min_high:
+            color_temp = temp - self._low_min_high
+            try:
+                if color_temp < 0:
+                    out_color = cyan
+                else:
+                    out_color = self._colors_low_low_high[color_temp]
+            except IndexError:
+                out_color = cyan
+        #Do greater than normal temp
+        elif temp > self._max_high:
+            color_temp = temp - self._max_high
+            try:
+                out_color = self._colors_high_high_high[color_temp]
+            except IndexError:
+                out_color = dark_orange
+        else:
+            out_color = black
+        out_red = self.change_scale(out_color.get_red())
+        out_green = self.change_scale(out_color.get_green())
+        out_blue = self.change_scale(out_color.get_blue())
+        return out_red, out_green, out_blue
 
     def get(self, temp):
         #Do normal method
