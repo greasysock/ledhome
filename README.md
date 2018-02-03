@@ -9,7 +9,8 @@ An led driver script that changes the color temperature based on the weather. Cu
 
 ### Prerequisites:
 
-* Python 3, tmux
+* Python 3, tmux, scipy, numpy `sudo apt-get install python3 tmux python3-scipy python3-numpy python3-pip`
+* Python 3 package colour `sudo pip3 install colour`
 * Tkinter for testing on PC, otherwise optional
 * https://github.com/adafruit/Adafruit_Python_GPIO
 
@@ -22,7 +23,7 @@ export weatherbit_api="your_weathebit_api"
 export weatherbit_city="New York"
 export weatherbit_state="NY"
 ```
-Then to run, enter:
+Then to install and run:
  ```
 mkdir ~/git
 cd ~/git
