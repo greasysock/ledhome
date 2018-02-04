@@ -40,9 +40,12 @@ except KeyError:
     sys.exit(2)
 
 try:
-    DEFAULT_LED = os.environ['tealight_leds']
+    DEFAULT_LED = int(os.environ['tealight_leds'])
 except KeyError:
     pass
+except ValueError:
+    print("Invalid number in tealight_leds")
+    sys.exit(2)
 
 
 def worker():
