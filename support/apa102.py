@@ -99,6 +99,8 @@ class APA102():
     def set_brightness(self, brightness):
         if brightness < self._MAX_BRIGHTNESS:
             self._global_brightness = brightness
+        else:
+            self._global_brightness = self._MAX_BRIGHTNESS
     def clock_start_frame(self):
         """Sends a start frame to the LED strip.
 
