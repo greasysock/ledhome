@@ -10,19 +10,17 @@ class PrecEvents(Enum):
     hail = 2,
     freezing_rain = 3,
 
-class precipitation():
-    _current = None
+class precipitation:
+
     def __init__(self, precipitation_data):
-        pass
+        self._current = None
 
 class temperature():
-    _feels_like = None
-    _actual = None
-    _unit = None
 
     def __init__(self, temperature_data):
         self._feels_like = temperature_data['app_temp']
         self._actual = temperature_data['temp']
+        self._unit = None
 
     @property
     def feels_like(self):
@@ -32,17 +30,7 @@ class temperature():
     def actual(self):
         return self._actual
 
-class forecast():
-
-    _timestamp = None
-
-    _wind_speed = None
-    _wind_direction = None
-    _cloud_coverage = None
-    _pressure = None
-    _day_to_night_ratio = None
-    _visibility = None
-    _uv_index = None
+class forecast:
 
     def __init__(self, forecast_data):
         self._timestamp = forecast_data['ts']
@@ -101,25 +89,17 @@ class forecast():
     def uv_index(self):
         return self._uv_index
 
-class weather():
-    _lat = None
-    _lon = None
-    _timezone = None
-    _city_name = None
-    _country_code = None
-    _state_code = None
-
-    _forecast = []
+class weather:
 
     def __init__(self, data):
         obj_data = data['data']
+        self._forecast = []
         self._city_name = data['city_name']
         self._state_code = data['state_code']
         self._country_code = data['country_code']
         self._lat = data['lat']
         self._lon = data['lon']
         self._timezone = data['timezone']
-        self._forecast.clear()
         self._process_forecasts(obj_data)
 
 
