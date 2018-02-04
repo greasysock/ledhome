@@ -195,6 +195,8 @@ if __name__ == "__main__":
         from support import interface
         test_interface = interface.LedPanel(num_led)
     if graph:
+        import matplotlib as mpl
+        mpl.use('Agg')
         import matplotlib.pyplot as plt
     main = MainLoop(cycle, test_interface=test_interface, night_mode=night, leds=num_led, graph=graph)
     main.start()
