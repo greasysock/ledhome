@@ -87,6 +87,10 @@ class forecast():
 
     @property
     def day_to_night(self):
+        if self._day_to_night_ratio == "d":
+            return 0
+        elif self._day_to_night_ratio == "n":
+            return 1
         return self._day_to_night_ratio
 
     @property

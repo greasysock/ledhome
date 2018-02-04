@@ -51,9 +51,10 @@ class MainLoop(threading.Thread):
     _BRIGHT_TIME = 7
     _MAX_BRIGHT = 31
     _DIM_BRIGHT = 1
-    def __init__(self, cycle, test_interface=None):
+    def __init__(self, cycle, test_interface=None, night_mode = DEFAULT_NIGHT):
         threading.Thread.__init__(self, target=worker)
         self._cycle = cycle
+        self._night = night_mode
         self._test_interface = test_interface
         self._weatherbit = api.connection(weatherbit_api)
         self._lookup_timeout = 60*20
@@ -88,7 +89,10 @@ class MainLoop(threading.Thread):
  #       temp = np.array([50,45,65,70,65,40,45,25,21,28,20,19])
         self._f = interp1d(self._x_val, temp, bounds_error=False, kind='cubic')
     def _get_brightness(self):
+        latest_forecast = self._last_weather.forecasts[0]
         if datetime.datetime.now().hour >= self._DIM_TIME or datetime.datetime.now().hour <= self._BRIGHT_TIME:
+            return self._DIM_BRIGHT
+        elif self._night and latest_forecast.day_to_night:
             return self._DIM_BRIGHT
         return self._MAX_BRIGHT
     def run(self):
@@ -167,7 +171,7 @@ if __name__ == "__main__":
     if test:
         from support import interface
         test_interface = interface.LedPanel(num_led)
-    main = MainLoop(cycle, test_interface=test_interface)
+    main = MainLoop(cycle, test_interface=test_interface, night_mode=night)
     main.start()
     if test:
         test_interface.start()
