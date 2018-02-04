@@ -9,6 +9,7 @@ An led driver script that changes the color based on the weather. Currently only
 
 ### Prerequisites:
 
+* Enable SPI interface on Raspberry Pi
 * Python 3, tmux, scipy, numpy `sudo apt-get install python3 tmux python3-scipy python3-numpy python3-pip`
 * Python 3 packages colour and requests `sudo pip3 install colour requests`
 * Tkinter for testing on PC, otherwise optional
