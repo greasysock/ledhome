@@ -9,7 +9,7 @@ from scipy.interpolate import interp1d
 
 DEFAULT_LED = 10
 DEFAULT_TEST = False
-DEFAULT_CYCLE = 'high_low'
+DEFAULT_CYCLE = 'np'
 DEFAULT_CYCLES = {
     'high_low' : 0,
     'np' : 1
