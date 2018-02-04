@@ -9,7 +9,8 @@ from scipy.interpolate import interp1d
 
 DEFAULT_LED = 10
 DEFAULT_TEST = False
-DEFAULT_CYCLE = 'high_low'
+DEFAULT_CYCLE = 'np'
+DEFAULT_NIGHT = False
 DEFAULT_CYCLES = {
     'high_low' : 0,
     'np' : 1
@@ -126,6 +127,7 @@ def main():
     parser.add_argument('-t', '--test', help='Simulates led animations in a tkinter window.', action='store_true', required=False)
     parser.add_argument('-l', '--leds', help='Number of LEDs to power. Default is 10.', metavar='\'(int)\'', required=False)
     parser.add_argument('-c', '--cycle', help='Choose cycle type.', metavar='\'(cycle)\'', required=False)
+    parser.add_argument('-n', '--night', help='Enable night mode to dim brightness after sunset.', action='store_true', required=False)
 
 
     args = parser.parse_args()
@@ -133,6 +135,7 @@ def main():
     test = DEFAULT_TEST
     leds = DEFAULT_LED
     cycle = DEFAULT_CYCLE
+    night = DEFAULT_NIGHT
     if args.test:
         test = True
     if args.leds:
@@ -152,12 +155,15 @@ def main():
         except KeyError:
             print("Enter a valid cycle type")
             sys.exit(2)
+
+    if args.night:
+        night = True
     cycle = DEFAULT_CYCLES[cycle]
-    return test, leds, cycle
+    return test, leds, cycle, night
 
 if __name__ == "__main__":
     test_interface = None
-    test, num_led, cycle = main()
+    test, num_led, cycle, night = main()
     if test:
         from support import interface
         test_interface = interface.LedPanel(num_led)
