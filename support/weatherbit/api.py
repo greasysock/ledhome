@@ -1,13 +1,15 @@
 import requests, json
 from support.weatherbit import objects
+from support import __version__, __title__
 
 class connection():
 
     _api_address = 'https://api.weatherbit.io/v2.0/'
 
     def __init__(self, api_token):
-        self._session = requests.Session()
+        self._session = requests
         self._api_token = api_token
+        self._header = {'user-agent':'{}/{}'.format(__title__, __version__)}
 
     def _build_address(self, endpoint):
         return self._api_address + endpoint
@@ -73,7 +75,7 @@ class connection():
                    'units':'I',
                    'hours':12}
 
-        r = self._session.get(address, params=payload)
+        r = self._session.get(address, params=payload, headers=self._header)
         try:
             rjson = r.json()
             weatherobj = objects.weather(rjson)

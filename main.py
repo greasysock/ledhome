@@ -11,6 +11,8 @@ DEFAULT_LED = 10
 DEFAULT_TEST = False
 DEFAULT_CYCLE = 'np'
 DEFAULT_NIGHT = False
+DEFAULT_GRAPH = False
+
 DEFAULT_CYCLES = {
     'high_low' : 0,
     'np' : 1
@@ -37,6 +39,11 @@ except KeyError:
     print('ERROR: \'weatherbit_state\' env variable is missing.')
     sys.exit(2)
 
+try:
+    DEFAULT_LED = os.environ['tealight_leds']
+except KeyError:
+    pass
+
 
 def worker():
     while True:
@@ -51,10 +58,13 @@ class MainLoop(threading.Thread):
     _BRIGHT_TIME = 7
     _MAX_BRIGHT = 31
     _DIM_BRIGHT = 1
-    def __init__(self, cycle, test_interface=None, night_mode = DEFAULT_NIGHT):
+    _NIGHT_BRIGHT = 0
+    def __init__(self, cycle, test_interface=None, night_mode = DEFAULT_NIGHT, leds = DEFAULT_LED, graph = DEFAULT_GRAPH):
         threading.Thread.__init__(self, target=worker)
         self._cycle = cycle
         self._night = night_mode
+        self._leds = leds
+        self._graph = graph
         self._test_interface = test_interface
         self._weatherbit = api.connection(weatherbit_api)
         self._lookup_timeout = 60*20
@@ -88,23 +98,28 @@ class MainLoop(threading.Thread):
         self._x_val = np.array(x_temp)
  #       temp = np.array([50,45,65,70,65,40,45,25,21,28,20,19])
         self._f = interp1d(self._x_val, temp, bounds_error=False, kind='cubic')
+        if self._graph:
+            xnew = np.linspace(0, weather.__len__(), num=100, endpoint=True)
+            plt.plot(x_temp, temp, 'o', xnew, self._f(xnew), '--')
+            name = "{}.png".format(datetime.datetime.now().hour)
+            plt.savefig(name)
     def _get_brightness(self):
         latest_forecast = self._last_weather.forecasts[0]
         if datetime.datetime.now().hour >= self._DIM_TIME or datetime.datetime.now().hour <= self._BRIGHT_TIME:
-            return self._DIM_BRIGHT
+            return self._NIGHT_BRIGHT
         elif self._night and latest_forecast.day_to_night:
             return self._DIM_BRIGHT
         return self._MAX_BRIGHT
     def run(self):
         if self._cycle == 0:
-            cycle = colorschemes.Solid(num_led=DEFAULT_LED, pause_value=3, num_steps_per_cycle=100, num_cycles=0,
+            cycle = colorschemes.Solid(num_led=self._leds, pause_value=3, num_steps_per_cycle=100, num_cycles=0,
                                         brightness=100, test=test, test_interface=self._test_interface, order="rgb")
         elif self._cycle == 1:
-            cycle = colorschemes.NpFunction(num_led=DEFAULT_LED, pause_value=3, num_steps_per_cycle=100, num_cycles=0,
+            cycle = colorschemes.NpFunction(num_led=self._leds, pause_value=3, num_steps_per_cycle=100, num_cycles=0,
                                        brightness=100, test=test, test_interface=self._test_interface, order="rgb",x_val=self._x_val)
             cycle.set_color_generator(self._tempscheme)
         else:
-            cycle = colorschemes.Solid(num_led=DEFAULT_LED, pause_value=3, num_steps_per_cycle=100, num_cycles=0,
+            cycle = colorschemes.Solid(num_led=self._leds, pause_value=3, num_steps_per_cycle=100, num_cycles=0,
                                         brightness=100, test=test, test_interface=self._test_interface, order="rgb")
         cycle.start()
         while True:
@@ -132,6 +147,8 @@ def main():
     parser.add_argument('-l', '--leds', help='Number of LEDs to power. Default is 10.', metavar='\'(int)\'', required=False)
     parser.add_argument('-c', '--cycle', help='Choose cycle type.', metavar='\'(cycle)\'', required=False)
     parser.add_argument('-n', '--night', help='Enable night mode to dim brightness after sunset.', action='store_true', required=False)
+    parser.add_argument('-g', '--graph', help='Enable hourly graphs.', action='store_true', required=False)
+
 
 
     args = parser.parse_args()
@@ -140,6 +157,7 @@ def main():
     leds = DEFAULT_LED
     cycle = DEFAULT_CYCLE
     night = DEFAULT_NIGHT
+    graph = DEFAULT_GRAPH
     if args.test:
         test = True
     if args.leds:
@@ -162,16 +180,20 @@ def main():
 
     if args.night:
         night = True
+    if args.graph:
+        graph = True
     cycle = DEFAULT_CYCLES[cycle]
-    return test, leds, cycle, night
+    return test, leds, cycle, night, graph
 
 if __name__ == "__main__":
     test_interface = None
-    test, num_led, cycle, night = main()
+    test, num_led, cycle, night, graph = main()
     if test:
         from support import interface
         test_interface = interface.LedPanel(num_led)
-    main = MainLoop(cycle, test_interface=test_interface, night_mode=night)
+    if graph:
+        import matplotlib.pyplot as plt
+    main = MainLoop(cycle, test_interface=test_interface, night_mode=night, leds=num_led, graph=graph)
     main.start()
     if test:
         test_interface.start()
