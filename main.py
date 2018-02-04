@@ -60,7 +60,7 @@ class MainLoop(threading.Thread):
     _DIM_TIME = 23
     _BRIGHT_TIME = 7
     _MAX_BRIGHT = 31
-    _DIM_BRIGHT = 1
+    _DIM_BRIGHT = 15
     _NIGHT_BRIGHT = 0
     def __init__(self, cycle, test_interface=None, night_mode = DEFAULT_NIGHT, leds = DEFAULT_LED, graph = DEFAULT_GRAPH):
         threading.Thread.__init__(self, target=worker)
