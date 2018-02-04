@@ -119,7 +119,9 @@ class weather():
         self._lat = data['lat']
         self._lon = data['lon']
         self._timezone = data['timezone']
+        self._forecast.clear()
         self._process_forecasts(obj_data)
+
 
     def _process_forecasts(self, data):
 
