@@ -1,5 +1,6 @@
 # tealight
 An led driver script that changes the color based on the weather. Currently only supports APA102 LEDs.
+APA102 driver is derived from https://github.com/tinue/APA102_Pi with a few slight modifications and additions to fit my use.
 
 ### Requirements:
 
