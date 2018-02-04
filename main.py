@@ -10,7 +10,6 @@ from scipy.interpolate import interp1d
 DEFAULT_LED = 10
 DEFAULT_TEST = False
 DEFAULT_CYCLE = 'high_low'
-DEFAULT_NIGHT = False
 DEFAULT_CYCLES = {
     'high_low' : 0,
     'np' : 1
@@ -51,10 +50,9 @@ class MainLoop(threading.Thread):
     _BRIGHT_TIME = 7
     _MAX_BRIGHT = 31
     _DIM_BRIGHT = 1
-    def __init__(self, cycle, test_interface=None, night_mode = False):
+    def __init__(self, cycle, test_interface=None):
         threading.Thread.__init__(self, target=worker)
         self._cycle = cycle
-        self._night_mode = night_mode
         self._test_interface = test_interface
         self._weatherbit = api.connection(weatherbit_api)
         self._lookup_timeout = 60*20
@@ -90,8 +88,6 @@ class MainLoop(threading.Thread):
         self._f = interp1d(self._x_val, temp, bounds_error=False, kind='cubic')
     def _get_brightness(self):
         if datetime.datetime.now().hour >= self._DIM_TIME or datetime.datetime.now().hour <= self._BRIGHT_TIME:
-            return self._DIM_BRIGHT
-        elif self._night_mode and self._last_weather.forecasts[0].day_to_night == 0:
             return self._DIM_BRIGHT
         return self._MAX_BRIGHT
     def run(self):
@@ -130,8 +126,6 @@ def main():
     parser.add_argument('-t', '--test', help='Simulates led animations in a tkinter window.', action='store_true', required=False)
     parser.add_argument('-l', '--leds', help='Number of LEDs to power. Default is 10.', metavar='\'(int)\'', required=False)
     parser.add_argument('-c', '--cycle', help='Choose cycle type.', metavar='\'(cycle)\'', required=False)
-    parser.add_argument('-n', '--night', help='Reduces brightness at night.', action='store_true', required=False)
-
 
 
     args = parser.parse_args()
@@ -139,7 +133,6 @@ def main():
     test = DEFAULT_TEST
     leds = DEFAULT_LED
     cycle = DEFAULT_CYCLE
-    night = DEFAULT_NIGHT
     if args.test:
         test = True
     if args.leds:
@@ -159,18 +152,16 @@ def main():
         except KeyError:
             print("Enter a valid cycle type")
             sys.exit(2)
-    if args.night:
-        night = True
     cycle = DEFAULT_CYCLES[cycle]
-    return test, leds, cycle, night
+    return test, leds, cycle
 
 if __name__ == "__main__":
     test_interface = None
-    test, num_led, cycle, night = main()
+    test, num_led, cycle = main()
     if test:
         from support import interface
         test_interface = interface.LedPanel(num_led)
-    main = MainLoop(cycle, test_interface=test_interface, night_mode = night)
+    main = MainLoop(cycle, test_interface=test_interface)
     main.start()
     if test:
         test_interface.start()

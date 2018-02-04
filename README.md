@@ -1,5 +1,6 @@
 # tealight
-An led driver script that changes the color temperature based on the weather. Currently only supports APA102 LEDs.
+An led driver script that changes the color based on the weather. Currently only supports APA102 LEDs.
+APA102 driver is derived from https://github.com/tinue/APA102_Pi with a few slight modifications and additions to fit my use.
 
 ### Requirements:
 
@@ -9,10 +10,20 @@ An led driver script that changes the color temperature based on the weather. Cu
 
 ### Prerequisites:
 
+* Enable SPI interface on Raspberry Pi
 * Python 3, tmux, scipy, numpy `sudo apt-get install python3 tmux python3-scipy python3-numpy python3-pip`
-* Python 3 package colour `sudo pip3 install colour`
+* Python 3 packages colour and requests `sudo pip3 install colour requests`
 * Tkinter for testing on PC, otherwise optional
 * https://github.com/adafruit/Adafruit_Python_GPIO
+```
+sudo apt-get update
+sudo apt-get install build-essential python3-pip python3-dev python3-smbus git
+git clone https://github.com/adafruit/Adafruit_Python_GPIO.git
+cd Adafruit_Python_GPIO
+sudo python3 ./setup.py install
+cd ..
+rm -R Adafruit_Python_GPIO
+```
 
 ### Setup:
 
