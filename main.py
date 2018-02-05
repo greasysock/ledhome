@@ -12,6 +12,7 @@ DEFAULT_TEST = False
 DEFAULT_CYCLE = 'np'
 DEFAULT_NIGHT = False
 DEFAULT_GRAPH = False
+DEFAULT_BRIGHTNESS = 31
 
 DEFAULT_CYCLES = {
     'high_low' : 0,
@@ -47,6 +48,14 @@ except ValueError:
     print("Invalid number in tealight_leds")
     sys.exit(2)
 
+try:
+    DEFAULT_BRIGHTNESS = int(os.environ['tealight_brightness_day'])
+except KeyError:
+    pass
+except ValueError:
+    print("Invalid number in tealight_brightness_day_")
+    sys.exit(2)
+
 
 def worker():
     while True:
@@ -59,7 +68,7 @@ def worker():
 class MainLoop(threading.Thread):
     _DIM_TIME = 23
     _BRIGHT_TIME = 7
-    _MAX_BRIGHT = 31
+    _MAX_BRIGHT = DEFAULT_BRIGHTNESS
     _DIM_BRIGHT = 15
     _NIGHT_BRIGHT = 0
     def __init__(self, cycle, test_interface=None, night_mode = DEFAULT_NIGHT, leds = DEFAULT_LED, graph = DEFAULT_GRAPH):
