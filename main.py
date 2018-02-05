@@ -53,7 +53,7 @@ try:
 except KeyError:
     pass
 except ValueError:
-    print("Invalid number in tealight_brightness_day_")
+    print("Invalid number in tealight_brightness_day")
     sys.exit(2)
 
 
