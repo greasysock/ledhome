@@ -2,6 +2,9 @@ import requests, json
 from support.weatherbit import objects
 from support import __version__, __title__
 
+class ConnectionError(Exception):
+    pass
+
 class connection():
 
     _api_address = 'https://api.weatherbit.io/v2.0/'
@@ -80,6 +83,6 @@ class connection():
             rjson = r.json()
             weatherobj = objects.weather(rjson)
         except json.decoder.JSONDecodeError:
-            weatherobj = -1
+            raise(ConnectionError)
         return weatherobj
 

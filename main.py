@@ -87,7 +87,12 @@ class MainLoop(threading.Thread):
         self._x_val = None
     def _get_high_low(self):
         if time.time() - self._last_lookup > self._lookup_timeout:
-            weather = self._weatherbit.get_forecast_hourly(city=weatherbit_city, state=weatherbit_state)
+            try:
+                weather = self._weatherbit.get_forecast_hourly(city=weatherbit_city, state=weatherbit_state)
+            except api.ConnectionError:
+                weather = self._last_weather
+                print("Connection Error. Using last forecast.")
+            self._last_weather = weather
             self._get_np_high_low(weather)
             self._last_weather = weather
 
